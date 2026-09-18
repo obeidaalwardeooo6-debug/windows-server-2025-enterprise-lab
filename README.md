@@ -1,16 +1,16 @@
-# Windows Server 2025 Enterprise Lab
+# Windows Server 2025 – Infrastrukturprosjekt
 
-A hands-on Windows Server 2025 infrastructure project demonstrating the design, configuration, testing, and troubleshooting of Active Directory Domain Services, DNS, DHCP, Group Policy, shared network resources, and Windows 11 domain integration.
+Et praktisk Windows Server 2025-prosjekt som viser oppsett, konfigurering, testing og feilsøking av Active Directory Domain Services, DNS, DHCP, Group Policy, delte nettverksressurser og integrasjon av en Windows 11-klient i domenet.
 
 ---
 
-## Project Overview
+## Prosjektoversikt
 
-This project was created as a practical Windows Server infrastructure lab for the fictional company **KubenData**.
+Dette prosjektet ble gjennomført som et praktisk Windows Server-miljø for den fiktive bedriften **KubenData**.
 
-The goal was to build a small enterprise-style Windows environment where users, computers, network services, and security policies are centrally managed from a Windows Server 2025 Domain Controller.
+Målet var å bygge et mindre bedriftsnettverk der brukere, klientmaskiner, nettverkstjenester og sikkerhetsinnstillinger administreres sentralt fra en Windows Server 2025 Domain Controller.
 
-The lab includes:
+Miljøet inneholder:
 
 - Windows Server 2025
 - Active Directory Domain Services
@@ -18,38 +18,38 @@ The lab includes:
 - DNS
 - DHCP
 - Organizational Units
-- Domain users
+- Domenebrukere
 - Group Policy Objects
-- Shared network folders
-- Windows 11 Pro domain client
-- Testing and troubleshooting
+- Delte nettverksmapper
+- Windows 11 Pro domeneklient
+- Testing og feilsøking
 
 ---
 
-## Lab Environment
+## Labmiljø
 
-| Component | Configuration |
+| Komponent | Konfigurasjon |
 |---|---|
-| Server hostname | DC01 |
-| Server OS | Windows Server 2025 |
+| Servernavn | DC01 |
+| Serveroperativsystem | Windows Server 2025 |
 | Server IPv4 | 192.168.0.10 |
 | Subnet Mask | 255.255.255.0 |
 | Default Gateway | 192.168.0.1 |
-| Active Directory Domain | kubendata.local |
-| Client hostname | CLIENT-PC2 |
-| Client OS | Windows 11 Pro |
+| Active Directory-domene | kubendata.local |
+| Klientnavn | CLIENT-PC2 |
+| Klientoperativsystem | Windows 11 Pro |
 | DHCP Scope | 192.168.0.100 - 192.168.0.200 |
 | DNS Server | 192.168.0.10 |
 
 ---
 
-## Network Architecture
+## Nettverksarkitektur
 
 ```text
-                    Internet
+                    Internett
                        |
                        |
-              Router / Gateway
+               Router / Gateway
                  192.168.0.1
                        |
             -----------------------
@@ -67,31 +67,31 @@ The lab includes:
 Group Policy
 ```
 
-`DC01` provides the main infrastructure services for the domain.
+`DC01` leverer de sentrale infrastrukturtjenestene i domenet.
 
-The router remains the network gateway, while DHCP and DNS services are provided by the Windows Server environment.
+Routeren fungerer fortsatt som gateway, mens DNS og DHCP håndteres av Windows Server-miljøet.
 
 ---
 
 # Active Directory Domain Services
 
-## Domain Configuration
+## Domenekonfigurasjon
 
-Active Directory Domain Services was installed on Windows Server 2025.
+Active Directory Domain Services ble installert på Windows Server 2025.
 
-The server was promoted to a Domain Controller for:
+Serveren ble promotert til Domain Controller for domenet:
 
 ```text
 kubendata.local
 ```
 
-The Domain Controller hostname is:
+Domain Controller heter:
 
 ```text
 DC01
 ```
 
-The server uses a static IP address:
+Serveren bruker den statiske IP-adressen:
 
 ```text
 192.168.0.10
@@ -101,7 +101,7 @@ The server uses a static IP address:
 
 ## Organizational Units
 
-Three Organizational Units were created to represent the departments in KubenData:
+Tre Organizational Units ble opprettet for å representere avdelingene i KubenData:
 
 ```text
 OU-IT
@@ -109,13 +109,13 @@ OU-HR
 OU-SALG
 ```
 
-The OUs are used to organize users and control where Group Policy Objects apply.
+OU-ene brukes til å organisere brukere og bestemme hvor forskjellige Group Policy Objects skal gjelde.
 
 ---
 
-## Domain Users
+## Domenebrukere
 
-### IT Department
+### IT-avdelingen
 
 ```text
 ola.nordmann
@@ -123,7 +123,7 @@ kari.hansen
 per.olsen
 ```
 
-### HR Department
+### HR-avdelingen
 
 ```text
 anne.larsen
@@ -131,7 +131,7 @@ nina.berg
 hans.jensen
 ```
 
-### Sales Department
+### Salgsavdelingen
 
 ```text
 liv.andersen
@@ -139,29 +139,29 @@ erik.holm
 tom.nilsen
 ```
 
-Each user was placed in the correct Organizational Unit.
+Brukerne ble plassert i riktig Organizational Unit.
 
 ---
 
-# Windows 11 Domain Client
+# Windows 11 domeneklient
 
-A Windows 11 Pro virtual machine was configured as the domain client.
+En virtuell maskin med Windows 11 Pro ble konfigurert som klientmaskin.
 
-Hostname:
+Maskinnavn:
 
 ```text
 CLIENT-PC2
 ```
 
-The client was successfully joined to:
+Klienten ble meldt inn i domenet:
 
 ```text
 kubendata.local
 ```
 
-Domain users were then able to sign in using domain credentials.
+Domenebrukere kunne deretter logge inn på klientmaskinen.
 
-Examples:
+Eksempler:
 
 ```text
 KUBENDATA\ola.nordmann
@@ -169,110 +169,112 @@ KUBENDATA\anne.larsen
 KUBENDATA\liv.andersen
 ```
 
-A local administrator account was also retained for administrative and troubleshooting tasks.
+En lokal administratorkonto ble også beholdt for administrasjon og feilsøking.
 
 ---
 
-# DNS Configuration
+# DNS
 
-DNS is installed on `DC01` and integrated with the Active Directory environment.
+DNS kjører på `DC01` og er integrert med Active Directory-miljøet.
 
-Domain clients use:
+Domeneklienter bruker:
 
 ```text
 192.168.0.10
 ```
 
-as their DNS server.
+som DNS-server.
 
-This allows clients to locate Active Directory services and resolve the internal domain.
+Dette gjør at klientene kan finne Active Directory-tjenester og slå opp det interne domenet.
 
 ---
 
-## Internal DNS Test
+## Test av intern DNS
 
-The domain was tested using:
+Domenet ble testet med:
 
 ```powershell
 nslookup kubendata.local
 ```
 
-The result confirmed:
+Resultatet viste:
 
 ```text
 kubendata.local
 192.168.0.10
 ```
 
-This verified that the domain name resolves correctly to the Domain Controller.
+Dette bekreftet at domenenavnet ble slått opp korrekt til Domain Controller.
 
 ---
 
-## External DNS Test
+## Test av ekstern DNS
 
-External DNS resolution was tested using:
+Ekstern navneoppløsning ble testet med:
 
 ```powershell
 nslookup google.com
 ```
 
-The lookup returned valid IP addresses, confirming that external DNS resolution was working.
+Oppslaget returnerte gyldige IP-adresser.
+
+Dette bekreftet at eksterne DNS-oppslag fungerte.
 
 ---
 
-## DNS Forwarding
+## DNS Forwarder
 
-The DNS server was configured to forward external DNS requests that it cannot resolve locally.
+DNS-serveren er konfigurert til å videresende eksterne DNS-forespørsler som den ikke kan løse lokalt.
 
-The configured forwarder is:
+Konfigurert Forwarder:
 
 ```text
 192.168.0.1
 ```
 
-The DNS flow is therefore:
+DNS-flyten blir derfor:
 
 ```text
 CLIENT-PC2
     |
-    | DNS request
+    | DNS-forespørsel
     v
 DC01
 192.168.0.10
     |
-    | External request
+    | Eksternt oppslag
     v
 192.168.0.1
     |
     v
-Internet DNS
+Internett-DNS
 ```
 
 ---
 
-## DNS Diagnostics
+## DNS-diagnostikk
 
-DNS functionality on the Domain Controller was also tested using:
+DNS-funksjonaliteten på Domain Controller ble også kontrollert med:
 
 ```powershell
 dcdiag /test:dns
 ```
 
-The DNS diagnostic test completed successfully.
+DNS-testen ble fullført uten vesentlige feil.
 
 ---
 
-# DHCP Configuration
+# DHCP
 
-DHCP Server was installed on `DC01`.
+DHCP Server-rollen ble installert på `DC01`.
 
-The DHCP server was authorized in Active Directory before being used to distribute network configuration.
+DHCP-serveren ble autorisert i Active Directory før den ble tatt i bruk.
 
 ---
 
 ## DHCP Scope
 
-The DHCP scope was configured as:
+DHCP Scope ble konfigurert med:
 
 ```text
 Start IP:       192.168.0.100
@@ -280,13 +282,13 @@ End IP:         192.168.0.200
 Subnet Mask:    255.255.255.0
 ```
 
-This means domain clients can automatically receive an IP address from this range.
+Klientmaskiner kan dermed automatisk motta IP-adresser fra dette området.
 
 ---
 
 ## DHCP Options
 
-The following DHCP options were configured:
+Følgende DHCP Options ble konfigurert:
 
 ```text
 003 Router
@@ -303,33 +305,33 @@ The following DHCP options were configured:
 kubendata.local
 ```
 
-This ensures that DHCP clients receive the correct gateway, DNS server, and domain information automatically.
+Dette gjør at klientene automatisk mottar riktig gateway, DNS-server og domenenavn.
 
 ---
 
-## DHCP Migration from Router
+## Flytting av DHCP-funksjonen fra router til DC01
 
-Before activating DHCP on `DC01`, the DHCP service on the lab router was disabled.
+Før DHCP Scope ble aktivert på `DC01`, ble DHCP-funksjonen på labrouteren deaktivert.
 
-This was done to avoid having two DHCP servers distributing addresses on the same network.
+Dette ble gjort for å unngå at to DHCP-servere delte ut IP-adresser på samme nettverk samtidig.
 
-After the router DHCP service was disabled, the DHCP scope on `DC01` was activated.
+Etter at DHCP på routeren var deaktivert, ble Scope aktivert på `DC01`.
 
-The router continued to operate as:
+Routeren fortsatte å fungere som:
 
 ```text
 Default Gateway: 192.168.0.1
 ```
 
-while `DC01` became responsible for assigning network configuration.
+mens `DC01` overtok oppgaven med å dele ut nettverkskonfigurasjon.
 
 ---
 
-## Client DHCP Test
+## DHCP-test på klienten
 
-The Windows 11 client was configured to obtain its IP address and DNS server automatically.
+Windows 11-klienten ble satt til å hente både IP-adresse og DNS-server automatisk.
 
-The following commands were used:
+Følgende kommandoer ble brukt:
 
 ```powershell
 ipconfig /release
@@ -337,7 +339,7 @@ ipconfig /renew
 ipconfig /all
 ```
 
-The client successfully received:
+Klienten mottok:
 
 ```text
 IPv4 Address:     192.168.0.102
@@ -347,48 +349,50 @@ DHCP Server:      192.168.0.10
 DNS Server:       192.168.0.10
 ```
 
-This confirmed that DHCP was operating correctly from `DC01`.
+Dette bekreftet at DHCP på `DC01` fungerte korrekt.
 
 ---
 
-## DHCP Authorization Test
+## Kontroll av DHCP Authorization
 
-DHCP authorization in Active Directory was verified using:
+Autorisasjonen av DHCP-serveren i Active Directory ble kontrollert med:
 
 ```powershell
 Get-DhcpServerInDC
 ```
 
-The result confirmed:
+Resultatet viste:
 
 ```text
 192.168.0.10
 dc01.kubendata.local
 ```
 
+Dette bekreftet at `DC01` var autorisert som DHCP-server i domenet.
+
 ---
 
-## DHCP Service Test
+## Kontroll av DHCP-tjenesten
 
-The DHCP Server service was checked using:
+DHCP-tjenesten ble kontrollert med:
 
 ```powershell
 Get-Service DHCPServer
 ```
 
-The service status was:
+Status var:
 
 ```text
 Running
 ```
 
-This confirmed that the DHCP service was active.
+Dette bekreftet at DHCP Server-tjenesten kjørte.
 
 ---
 
 # Group Policy
 
-Separate Group Policy Objects were created for the three departments.
+Det ble opprettet separate Group Policy Objects for de tre avdelingene:
 
 ```text
 GPO-IT
@@ -396,7 +400,7 @@ GPO-HR
 GPO-SALG
 ```
 
-The policies were linked as follows:
+Policyene ble koblet slik:
 
 ```text
 GPO-IT
@@ -419,131 +423,131 @@ GPO-SALG
 OU-SALG
 ```
 
-This allows different departments to receive different Windows configurations.
+Dette gjør det mulig å gi forskjellige avdelinger forskjellige Windows-innstillinger.
 
 ---
 
-## IT Group Policy
+## GPO-IT
 
-`GPO-IT` was linked to:
+`GPO-IT` ble koblet til:
 
 ```text
 OU-IT
 ```
 
-The IT policy included user-based configuration such as:
+Policyen inneholder blant annet:
 
-- Restricted access to Control Panel / Settings
-- Start menu configuration
-- Automatic program launch at user logon
+- Begrenset tilgang til Control Panel / Settings
+- Innstillinger for Start-menyen
+- Automatisk oppstart av et program ved innlogging
 
-The policy was tested using:
+Policyen ble testet med brukeren:
 
 ```text
 ola.nordmann
 ```
 
-A program configured through Group Policy successfully started after user logon.
+Et program konfigurert gjennom Group Policy startet automatisk etter innlogging.
 
 ---
 
-## HR Group Policy
+## GPO-HR
 
-`GPO-HR` was linked to:
+`GPO-HR` ble koblet til:
 
 ```text
 OU-HR
 ```
 
-The HR configuration included:
+HR-policyen inneholder blant annet:
 
-- Restricted access to Windows settings
-- Restrictions on changing desktop configuration
-- Department desktop wallpaper
+- Begrenset tilgang til Windows-innstillinger
+- Begrensning av endring av skrivebordsinnstillinger
+- Felles bakgrunnsbilde for HR-brukerne
 
-The policy was tested using:
+Policyen ble testet med:
 
 ```text
 anne.larsen
 ```
 
-The configured HR wallpaper appeared successfully on the client.
+Det konfigurerte bakgrunnsbildet ble vist korrekt på klientmaskinen.
 
 ---
 
-## Sales Group Policy
+## GPO-SALG
 
-`GPO-SALG` was linked to:
+`GPO-SALG` ble koblet til:
 
 ```text
 OU-SALG
 ```
 
-The Sales configuration included:
+Salgsavdelingen fikk blant annet:
 
-- Windows restrictions
-- Desktop configuration
-- Sales department wallpaper
-- Shared network drive mapping
+- Begrensninger i Windows
+- Skrivebordsinnstillinger
+- Eget bakgrunnsbilde
+- Automatisk tilkobling til felles nettverksmappe
 
-The policy was tested using:
+Policyen ble testet med:
 
 ```text
 liv.andersen
 ```
 
-The Sales wallpaper appeared correctly.
+Bakgrunnsbildet for Salg ble vist korrekt.
 
 ---
 
-# Shared Network Resource
+# Delt nettverksressurs
 
-A shared folder was created on the server for the Sales department.
+En delt mappe ble opprettet på serveren for Salgsavdelingen.
 
-Server path:
+Lokal mappe:
 
 ```text
 C:\SalgFelles
 ```
 
-Network path:
+Nettverkssti:
 
 ```text
 \\DC01\SalgFelles
 ```
 
-The shared folder was automatically mapped using Group Policy Preferences as:
+Mappen ble automatisk koblet til brukerne ved hjelp av Group Policy Preferences som:
 
 ```text
 S:
 ```
 
-The Sales user successfully accessed the mapped network drive from `CLIENT-PC2`.
+Salgsbrukeren kunne åpne nettverksdisken fra `CLIENT-PC2`.
 
-This verified both:
+Dette bekreftet både:
 
 - Group Policy Preferences
-- Access to a server-hosted shared resource
+- Tilgang til en delt ressurs på serveren
 
 ---
 
-# Group Policy Validation
+# Testing av Group Policy
 
-Group Policy was refreshed manually using:
+Group Policy ble oppdatert manuelt med:
 
 ```powershell
 gpupdate /force
 ```
 
-The command confirmed that both computer and user policy processing completed successfully.
+Kommandoen bekreftet at både Computer Policy og User Policy ble behandlet.
 
-Applied policies were checked using:
+Resultatet av Group Policy ble kontrollert med:
 
 ```powershell
 gpresult /r
 ```
 
-Tests were performed with users from different departments.
+Brukere fra forskjellige avdelinger ble testet.
 
 ### IT
 
@@ -559,111 +563,112 @@ anne.larsen
 Applied GPO: GPO-HR
 ```
 
-### Sales
+### Salg
 
 ```text
 liv.andersen
 Applied GPO: GPO-SALG
 ```
 
-This confirmed that the correct policies were applied according to Organizational Unit membership.
+Dette bekreftet at riktig Group Policy ble brukt på riktig bruker og OU.
 
 ---
 
-# Domain Controller Validation
+# Kontroll av Domain Controller
 
-Domain Controller health was tested using:
+Domain Controller ble kontrollert med:
 
 ```powershell
 dcdiag
 ```
 
-Core Active Directory tests completed successfully.
+De sentrale Active Directory-testene ble fullført korrekt.
 
-Additional DNS testing was performed using:
+DNS ble i tillegg testet med:
 
 ```powershell
 dcdiag /test:dns
 ```
 
-DNS diagnostics passed successfully.
+DNS-testen besto.
 
-During broader diagnostics, some Windows System Event Log warnings were observed.
+Under den komplette `dcdiag`-testen ble det registrert enkelte advarsler i Windows System Event Log.
 
-The core Active Directory, DNS, replication, services, and domain functionality remained operational.
+De sentrale Active Directory-, DNS-, replikasjons- og tjenestefunksjonene fungerte likevel som forventet.
 
 ---
 
-# SPN Troubleshooting
+# SPN-feilsøking
 
-As part of troubleshooting, duplicate Service Principal Names were checked using:
+Som en del av feilsøkingen ble det kontrollert om domenet hadde dupliserte Service Principal Names.
+
+Følgende kommando ble brukt:
 
 ```powershell
 setspn -X
 ```
 
-The result showed:
+Resultatet viste:
 
 ```text
 0 groups of duplicate SPNs
 ```
 
-This confirmed that no duplicate SPN entries were detected in the domain.
+Dette bekreftet at det ikke ble funnet dupliserte SPN-oppføringer.
 
 ---
 
-# Testing Summary
+# Testoversikt
 
-The following functionality was successfully tested:
+Følgende funksjonalitet ble testet:
 
-- Windows Server 2025 configuration
-- Static server IP configuration
+- Windows Server 2025
+- Statisk IP på server
 - Active Directory Domain Services
-- Domain Controller functionality
+- Domain Controller
 - Organizational Units
-- Domain users
-- Windows 11 domain join
-- Internal DNS resolution
-- External DNS resolution
-- DNS diagnostics
-- DHCP Server installation
-- DHCP authorization
-- DHCP scope configuration
-- DHCP client lease
-- DHCP service operation
-- Group Policy linking
-- Group Policy processing
-- Department-specific policies
-- Desktop wallpaper policies
-- Shared drive mapping
-- Domain user logon
-- PowerShell administrative validation
+- Domenebrukere
+- Windows 11 Domain Join
+- Intern DNS
+- Ekstern DNS
+- DNS-diagnostikk
+- DHCP Server
+- DHCP Authorization
+- DHCP Scope
+- DHCP-klient
+- DHCP Service
+- Group Policy
+- Avdelingsspesifikke policyer
+- Skrivebordsbakgrunn gjennom GPO
+- Mapped Drive
+- Domenepålogging
+- PowerShell-baserte administrasjonskommandoer
 
 ---
 
-# Troubleshooting Experience
+# Feilsøking
 
-The project also involved troubleshooting several real configuration issues.
+Prosjektet inneholdt også flere praktiske feilsøkingssituasjoner.
 
-Examples included:
+Eksempler:
 
-- Verifying that domain clients use the Domain Controller as DNS
-- Differentiating between local administrator and domain accounts
-- Testing Group Policy application with `gpresult`
-- Refreshing policies using `gpupdate`
-- Validating DHCP authorization
-- Avoiding multiple active DHCP servers on the same network
-- Testing DNS after DHCP configuration
-- Investigating Domain Controller diagnostic warnings
-- Checking duplicate SPNs
+- Kontroll av at domeneklienter bruker Domain Controller som DNS
+- Forskjellen mellom lokal administrator og domenebruker
+- Testing av Group Policy med `gpresult`
+- Oppdatering av policyer med `gpupdate`
+- Kontroll av DHCP Authorization
+- Unngå to aktive DHCP-servere på samme nettverk
+- Testing av DNS etter DHCP-konfigurasjon
+- Analyse av Domain Controller-advarsler
+- Kontroll av dupliserte SPN-er
 
-These troubleshooting steps helped validate both the infrastructure and the administrative workflow.
+Dette ga praktisk erfaring med både oppsett og systematisk feilsøking.
 
 ---
 
-# Commands Used
+# Viktige kommandoer
 
-Some of the main commands used during the project:
+Følgende kommandoer ble blant annet brukt i prosjektet:
 
 ```powershell
 hostname
@@ -684,35 +689,35 @@ setspn -X
 
 ---
 
-# Skills Demonstrated
+# Kompetanse demonstrert i prosjektet
 
-This project demonstrates practical experience with:
+Prosjektet viser praktisk erfaring med:
 
-- Windows Server 2025 administration
+- Windows Server 2025-administrasjon
 - Active Directory Domain Services
-- Domain Controller configuration
+- Domain Controller-konfigurasjon
 - Active Directory Users and Computers
-- Organizational Unit design
-- Domain user management
-- DNS configuration
-- DNS troubleshooting
-- DHCP installation and configuration
-- DHCP scopes and options
-- DHCP authorization in Active Directory
+- Organizational Units
+- Brukeradministrasjon
+- DNS
+- DNS-feilsøking
+- DHCP
+- DHCP Scope og Options
+- DHCP Authorization i Active Directory
 - Group Policy Management
 - Group Policy Preferences
-- Windows 11 domain integration
-- Shared network resources
-- PowerShell administration
-- Network troubleshooting
-- Infrastructure validation
-- Technical documentation
+- Windows 11 domeneklient
+- Delte nettverksressurser
+- PowerShell
+- Nettverksfeilsøking
+- Infrastrukturtesting
+- Teknisk dokumentasjon
 
 ---
 
-# Repository Structure
+# Struktur på repository
 
-The repository documentation will be organized as:
+Prosjektet organiseres slik:
 
 ```text
 windows-server-2025-enterprise-lab/
@@ -732,30 +737,30 @@ windows-server-2025-enterprise-lab/
     `-- gpo/
 ```
 
-Detailed screenshots and configuration evidence will be stored in the relevant folders.
+Detaljerte skjermbilder og teknisk dokumentasjon lagres i de relevante mappene.
 
 ---
 
-# Security
+# Sikkerhet
 
-No passwords, authentication secrets, recovery keys, private credentials, or other sensitive authentication information are included in this repository.
+Ingen passord, autentiseringshemmeligheter, recovery keys eller andre sensitive påloggingsopplysninger er inkludert i repositoryet.
 
-The IP addresses and domain names documented here belong to the isolated training lab environment.
+IP-adressene og domenenavnet som vises i dokumentasjonen tilhører det isolerte opplæringsmiljøet.
 
 ---
 
-# Project Status
+# Prosjektstatus
 
-**Completed**
+**Fullført**
 
-The Windows Server 2025 infrastructure was successfully configured and tested with:
+Windows Server 2025-miljøet ble konfigurert og testet med:
 
 ```text
 Active Directory
 DNS
 DHCP
 Group Policy
-Windows 11 Domain Client
+Windows 11 domeneklient
 ```
 
-The project demonstrates a complete small-scale Windows domain environment from server configuration through client validation and troubleshooting.
+Prosjektet viser et komplett mindre Windows-domene fra serverkonfigurasjon til klienttesting og feilsøking.
