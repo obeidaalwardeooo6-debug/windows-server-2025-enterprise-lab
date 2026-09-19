@@ -73,6 +73,50 @@ Routeren fungerer fortsatt som gateway, mens DNS og DHCP håndteres av Windows S
 
 ---
 
+## Designvalg og begrunnelse
+
+Flere av valgene i labmiljøet ble gjort for å etterligne prinsipper som brukes i et administrert Windows-domene.
+
+### Statisk IP på DC01
+
+`DC01` bruker den faste adressen:
+
+```text
+192.168.0.10
+```
+
+En Domain Controller bør ha en stabil IP-adresse fordi klienter og andre tjenester må kunne finne DNS, Active Directory og andre serverroller på samme adresse over tid.
+
+### DC01 som DNS-server
+
+Domeneklientene bruker:
+
+```text
+192.168.0.10
+```
+
+som DNS-server.
+
+Dette er viktig fordi Active Directory er avhengig av DNS for å finne domenetjenester og Domain Controllers. Klientene skal derfor spørre domenets DNS-server i stedet for å bruke routeren direkte som primær DNS.
+
+### DHCP flyttet fra router til DC01
+
+DHCP-funksjonen på labrouteren ble deaktivert før DHCP Scope på `DC01` ble aktivert.
+
+Dette hindrer at to DHCP-servere samtidig forsøker å dele ut nettverkskonfigurasjon på samme subnett.
+
+### Routeren beholdes som Default Gateway
+
+Selv om `DC01` overtok DHCP- og DNS-funksjonene, ble routeren fortsatt brukt som:
+
+```text
+Default Gateway: 192.168.0.1
+```
+
+Routeren håndterer trafikk ut av lokalnettet, mens Windows Server håndterer domenetjenester og sentral nettverkskonfigurasjon.
+
+---
+
 # Active Directory Domain Services
 
 ## Domenekonfigurasjon
@@ -521,6 +565,8 @@ Et program konfigurert gjennom Group Policy startet automatisk etter innlogging.
 
 ![GPO-IT åpnet i Group Policy Management Editor](screenshots/33-gpo-it-editor.png)
 
+Skjermbildet viser at `GPO-IT` er opprettet og åpnet i Group Policy Management Editor. Selve effekten av policyen ble kontrollert på klienten gjennom innlogging og Group Policy-testing.
+
 ---
 
 ## GPO-HR
@@ -546,6 +592,8 @@ anne.larsen
 Det konfigurerte bakgrunnsbildet ble vist korrekt på klientmaskinen.
 
 ![GPO-HR åpnet i Group Policy Management Editor](screenshots/34-gpo-hr-editor.png)
+
+Skjermbildet viser at `GPO-HR` er opprettet og åpnet i Group Policy Management Editor. At policyen faktisk ble brukt, dokumenteres videre med `gpresult`, bakgrunnsbildet og `gpupdate /force`.
 
 ![gpresult for HR-bruker](screenshots/10-gpo-hr-gpresult.png)
 
@@ -756,6 +804,27 @@ Dette ga praktisk erfaring med både oppsett og systematisk feilsøking.
 
 ---
 
+# Hva jeg lærte
+
+Gjennom prosjektet fikk jeg en bedre forståelse av hvordan de viktigste Windows Server-tjenestene samarbeider.
+
+Jeg lærte blant annet:
+
+- forskjellen mellom en lokal brukerkonto og en domenebruker
+- hvordan en Domain Controller administrerer brukere og datamaskiner sentralt
+- hvorfor DNS er kritisk for Active Directory
+- hvordan DHCP kan distribuere IP-adresse, gateway, DNS-server og domenenavn automatisk
+- hvordan Organizational Units brukes til å strukturere brukere
+- hvordan Group Policy kan gi ulike innstillinger til forskjellige avdelinger
+- hvordan `gpupdate /force` og `gpresult /r` brukes til å teste og feilsøke Group Policy
+- hvordan `nslookup`, `ipconfig` og `dcdiag` brukes til å verifisere nettverks- og domenetjenester
+- hvordan en mapped drive kan distribueres automatisk med Group Policy Preferences
+- hvordan systematisk testing kan skille mellom DNS-, DHCP-, GPO- og klientproblemer
+
+Prosjektet ga derfor erfaring med både selve konfigurasjonen og med å kontrollere at løsningene faktisk fungerer fra både server- og klientsiden.
+
+---
+
 # Viktige kommandoer
 
 Følgende kommandoer ble blant annet brukt i prosjektet:
@@ -823,6 +892,25 @@ windows-server-2025-enterprise-lab/
 ```
 
 Skjermbildene lagres samlet i `screenshots/`, og hvert skjermbilde vises direkte under den relevante delen i denne README-filen.
+
+---
+
+# Labmiljø sammenlignet med produksjon
+
+Dette prosjektet er et mindre opplæringsmiljø og er ikke ment som en full produksjonsarkitektur.
+
+I et større produksjonsmiljø ville man normalt vurdert flere tiltak, for eksempel:
+
+- flere Domain Controllers for redundans
+- DHCP Failover eller annen redundans
+- regelmessig backup og test av restore
+- segmentering med VLAN og tydeligere nettverksgrenser
+- strengere prinsipper for administrative rettigheter
+- sentral logging, overvåking og varsling
+- dokumenterte rutiner for patching og endringshåndtering
+- sterkere sikkerhetskonfigurasjon og hardening
+
+Labmiljøet fokuserer på å demonstrere grunnleggende arkitektur, administrasjon, testing og feilsøking i et Windows-domene.
 
 ---
 
