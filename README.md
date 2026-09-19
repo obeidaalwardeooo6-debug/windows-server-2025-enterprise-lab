@@ -111,7 +111,7 @@ OU-SALG
 
 OU-ene brukes til å organisere brukere og bestemme hvor forskjellige Group Policy Objects skal gjelde.
 
-![OU-struktur i Active Directory](Kuben%20Data/screenshots/01-ad-ou-structure.png)
+![OU-struktur i Active Directory](screenshots/01-ad-ou-structure.png)
 
 ---
 
@@ -125,7 +125,7 @@ kari.hansen
 per.olsen
 ```
 
-![Brukere i OU-IT](Kuben%20Data/screenshots/03-ad-users-it.png)
+![Brukere i OU-IT](screenshots/03-ad-users-it.png)
 
 ### HR-avdelingen
 
@@ -135,7 +135,7 @@ nina.berg
 hans.jensen
 ```
 
-![Brukere i OU-HR](Kuben%20Data/screenshots/02-ad-users-hr.png)
+![Brukere i OU-HR](screenshots/02-ad-users-hr.png)
 
 ### Salgsavdelingen
 
@@ -145,7 +145,7 @@ erik.holm
 tom.nilsen
 ```
 
-![Brukere i OU-SALG](Kuben%20Data/screenshots/04-ad-users-salg.png)
+![Brukere i OU-SALG](screenshots/04-ad-users-salg.png)
 
 Brukerne ble plassert i riktig Organizational Unit.
 
@@ -183,7 +183,7 @@ En lokal administratorkonto ble også beholdt for administrasjon og feilsøking.
 
 Før DHCP-funksjonen ble flyttet til `DC01`, viste klientens nettverkskonfigurasjon at routeren fortsatt var DHCP-server, mens DNS allerede pekte til Domain Controller.
 
-![CLIENT-PC2 ipconfig før DHCP-flytting](Kuben%20Data/screenshots/08-client-ipconfig-before-dhcp-migration.png)
+![CLIENT-PC2 ipconfig før DHCP-flytting](screenshots/08-client-ipconfig-before-dhcp-migration.png)
 
 ---
 
@@ -201,7 +201,7 @@ som DNS-server.
 
 Dette gjør at klientene kan finne Active Directory-tjenester og slå opp det interne domenet.
 
-![DNS Manager på DC01](Kuben%20Data/screenshots/06-dns-manager-dc01.png)
+![DNS Manager på DC01](screenshots/06-dns-manager-dc01.png)
 
 ---
 
@@ -222,7 +222,7 @@ kubendata.local
 
 Dette bekreftet at domenenavnet ble slått opp korrekt til Domain Controller.
 
-![Internt DNS-oppslag for kubendata.local](Kuben%20Data/screenshots/32-dns-internal-lookup-kubendata.png)
+![Internt DNS-oppslag for kubendata.local](screenshots/32-dns-internal-lookup-kubendata.png)
 
 ---
 
@@ -238,7 +238,7 @@ Oppslaget returnerte gyldige IP-adresser.
 
 Dette bekreftet at eksterne DNS-oppslag fungerte.
 
-![Eksternt DNS-oppslag mot google.com](Kuben%20Data/screenshots/31-dns-external-lookup-google.png)
+![Eksternt DNS-oppslag mot google.com](screenshots/31-dns-external-lookup-google.png)
 
 ---
 
@@ -270,7 +270,7 @@ DC01
 Internett-DNS
 ```
 
-![DNS Forwarder på DC01](Kuben%20Data/screenshots/30-dns-forwarder-configured.png)
+![DNS Forwarder på DC01](screenshots/30-dns-forwarder-configured.png)
 
 ---
 
@@ -284,7 +284,7 @@ dcdiag /test:dns
 
 DNS-testen ble fullført uten vesentlige feil.
 
-![dcdiag DNS-test](Kuben%20Data/screenshots/07-dns-dcdiag-test.png)
+![dcdiag DNS-test](screenshots/07-dns-dcdiag-test.png)
 
 ---
 
@@ -292,13 +292,13 @@ DNS-testen ble fullført uten vesentlige feil.
 
 DHCP Server-rollen ble installert på `DC01`.
 
-![DHCP Server-rollen installert](Kuben%20Data/screenshots/17-dhcp-role-installation-success.png)
+![DHCP Server-rollen installert](screenshots/17-dhcp-role-installation-success.png)
 
 Etter installasjonen ble DHCP synlig i Server Manager og kunne administreres fra DHCP-konsollen.
 
-![DHCP-status i Server Manager](Kuben%20Data/screenshots/18-dhcp-server-manager-status.png)
+![DHCP-status i Server Manager](screenshots/18-dhcp-server-manager-status.png)
 
-![DHCP-konsoll på DC01](Kuben%20Data/screenshots/19-dhcp-console-dc01.png)
+![DHCP-konsoll på DC01](screenshots/19-dhcp-console-dc01.png)
 
 DHCP-serveren ble autorisert i Active Directory før den ble tatt i bruk.
 
@@ -316,11 +316,11 @@ Subnet Mask:    255.255.255.0
 
 Før verdiene ble lagt inn, ble IP Address Range-siden i New Scope Wizard åpnet:
 
-![New Scope Wizard før verdier](Kuben%20Data/screenshots/20-dhcp-scope-wizard-ip-range.png)
+![New Scope Wizard før verdier](screenshots/20-dhcp-scope-wizard-ip-range.png)
 
 Scope-området ble deretter konfigurert med riktig startadresse, sluttadresse og subnett:
 
-![DHCP Scope med konfigurert IP-område](Kuben%20Data/screenshots/22-dhcp-scope-ip-range-configured.png)
+![DHCP Scope med konfigurert IP-område](screenshots/22-dhcp-scope-ip-range-configured.png)
 
 Klientmaskiner kan dermed automatisk motta IP-adresser fra dette området.
 
@@ -349,11 +349,11 @@ Dette gjør at klientene automatisk mottar riktig gateway, DNS-server og domenen
 
 ### 003 Router
 
-![DHCP Default Gateway](Kuben%20Data/screenshots/23-dhcp-default-gateway-configured.png)
+![DHCP Default Gateway](screenshots/23-dhcp-default-gateway-configured.png)
 
 ### 006 DNS Servers og 015 DNS Domain Name
 
-![DHCP DNS og domenenavn](Kuben%20Data/screenshots/24-dhcp-dns-domain-configured.png)
+![DHCP DNS og domenenavn](screenshots/24-dhcp-dns-domain-configured.png)
 
 ---
 
@@ -361,13 +361,13 @@ Dette gjør at klientene automatisk mottar riktig gateway, DNS-server og domenen
 
 Før DHCP Scope ble aktivert på `DC01`, ble DHCP-funksjonen på labrouteren deaktivert.
 
-![DHCP deaktivert på router](Kuben%20Data/screenshots/21-router-dhcp-disabled.png)
+![DHCP deaktivert på router](screenshots/21-router-dhcp-disabled.png)
 
 Dette ble gjort for å unngå at to DHCP-servere delte ut IP-adresser på samme nettverk samtidig.
 
 Scope ble først opprettet i inaktiv tilstand:
 
-![DHCP Scope opprettet som inaktiv](Kuben%20Data/screenshots/25-dhcp-scope-created-inactive.png)
+![DHCP Scope opprettet som inaktiv](screenshots/25-dhcp-scope-created-inactive.png)
 
 Etter at DHCP på routeren var deaktivert, ble Scope aktivert på `DC01`.
 
@@ -405,15 +405,15 @@ DNS Server:       192.168.0.10
 
 Først ble den gamle lease-en frigitt og en ny bedt om:
 
-![DHCP release og renew](Kuben%20Data/screenshots/26-dhcp-client-release-renew-success.png)
+![DHCP release og renew](screenshots/26-dhcp-client-release-renew-success.png)
 
 Deretter ble hele nettverkskonfigurasjonen kontrollert:
 
-![CLIENT-PC2 mottar DHCP fra DC01](Kuben%20Data/screenshots/27-dhcp-client-ipconfig-from-dc01.png)
+![CLIENT-PC2 mottar DHCP fra DC01](screenshots/27-dhcp-client-ipconfig-from-dc01.png)
 
 I DHCP-konsollen kunne lease-en også bekreftes fra serversiden:
 
-![DHCP Address Lease for CLIENT-PC2](Kuben%20Data/screenshots/28-dhcp-address-lease-client-pc2.png)
+![DHCP Address Lease for CLIENT-PC2](screenshots/28-dhcp-address-lease-client-pc2.png)
 
 Dette bekreftet at DHCP på `DC01` fungerte korrekt.
 
@@ -436,7 +436,7 @@ dc01.kubendata.local
 
 Dette bekreftet at `DC01` var autorisert som DHCP-server i domenet.
 
-![DHCP Authorization og tjenestestatus](Kuben%20Data/screenshots/29-dhcp-authorization-and-service-status.png)
+![DHCP Authorization og tjenestestatus](screenshots/29-dhcp-authorization-and-service-status.png)
 
 ---
 
@@ -493,7 +493,7 @@ OU-SALG
 
 Dette gjør det mulig å gi forskjellige avdelinger forskjellige Windows-innstillinger.
 
-![GPO-IT koblet til OU-IT](Kuben%20Data/screenshots/05-gpo-it-linked-to-ou-it.png)
+![GPO-IT koblet til OU-IT](screenshots/05-gpo-it-linked-to-ou-it.png)
 
 ---
 
@@ -519,7 +519,7 @@ ola.nordmann
 
 Et program konfigurert gjennom Group Policy startet automatisk etter innlogging.
 
-![GPO-IT åpnet i Group Policy Management Editor](Kuben%20Data/screenshots/33-gpo-it-editor.png)
+![GPO-IT åpnet i Group Policy Management Editor](screenshots/33-gpo-it-editor.png)
 
 ---
 
@@ -545,13 +545,13 @@ anne.larsen
 
 Det konfigurerte bakgrunnsbildet ble vist korrekt på klientmaskinen.
 
-![GPO-HR åpnet i Group Policy Management Editor](Kuben%20Data/screenshots/34-gpo-hr-editor.png)
+![GPO-HR åpnet i Group Policy Management Editor](screenshots/34-gpo-hr-editor.png)
 
-![gpresult for HR-bruker](Kuben%20Data/screenshots/10-gpo-hr-gpresult.png)
+![gpresult for HR-bruker](screenshots/10-gpo-hr-gpresult.png)
 
-![HR-bakgrunnsbilde fra GPO](Kuben%20Data/screenshots/11-gpo-hr-power-wallpaper-applied.png)
+![HR-bakgrunnsbilde fra GPO](screenshots/11-gpo-hr-power-wallpaper-applied.png)
 
-![gpupdate force for HR](Kuben%20Data/screenshots/12-gpo-hr-gpupdate-force-success.png)
+![gpupdate force for HR](screenshots/12-gpo-hr-gpupdate-force-success.png)
 
 ---
 
@@ -578,11 +578,11 @@ liv.andersen
 
 Bakgrunnsbildet for Salg ble vist korrekt.
 
-![Salg-bakgrunnsbilde fra GPO](Kuben%20Data/screenshots/09-gpo-salg-wallpaper-applied.png)
+![Salg-bakgrunnsbilde fra GPO](screenshots/09-gpo-salg-wallpaper-applied.png)
 
-![gpupdate force for Salg](Kuben%20Data/screenshots/13-gpo-salg-gpupdate-force-success.png)
+![gpupdate force for Salg](screenshots/13-gpo-salg-gpupdate-force-success.png)
 
-![gpresult for Salg-bruker](Kuben%20Data/screenshots/16-gpo-salg-gpresult.png)
+![gpresult for Salg-bruker](screenshots/16-gpo-salg-gpresult.png)
 
 ---
 
@@ -615,9 +615,9 @@ Dette bekreftet både:
 - Group Policy Preferences
 - Tilgang til en delt ressurs på serveren
 
-![Salg Felles åpnet som S-disk](Kuben%20Data/screenshots/14-gpo-salg-mapped-drive-s.png)
+![Salg Felles åpnet som S-disk](screenshots/14-gpo-salg-mapped-drive-s.png)
 
-![Salg Felles synlig under Denne PC](Kuben%20Data/screenshots/15-gpo-salg-mapped-drive-visible.png)
+![Salg Felles synlig under Denne PC](screenshots/15-gpo-salg-mapped-drive-visible.png)
 
 ---
 
@@ -814,16 +814,15 @@ windows-server-2025-enterprise-lab/
 |
 |-- README.md
 |
-`-- Kuben Data/
-    `-- screenshots/
-        |-- 01-ad-ou-structure.png
-        |-- 02-ad-users-hr.png
-        |-- 03-ad-users-it.png
-        |-- ...
-        `-- 34-gpo-hr-editor.png
+`-- screenshots/
+    |-- 01-ad-ou-structure.png
+    |-- 02-ad-users-hr.png
+    |-- 03-ad-users-it.png
+    |-- ...
+    `-- 34-gpo-hr-editor.png
 ```
 
-Skjermbildene lagres samlet i `Kuben Data/screenshots/`, og hvert skjermbilde vises direkte under den relevante delen i denne README-filen.
+Skjermbildene lagres samlet i `screenshots/`, og hvert skjermbilde vises direkte under den relevante delen i denne README-filen.
 
 ---
 
