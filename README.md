@@ -1,6 +1,6 @@
 # Windows Server 2025 – Infrastrukturprosjekt
 
-Et praktisk Windows Server 2025-prosjekt som viser oppsett, konfigurering, testing og feilsøking av Active Directory Domain Services, DNS, DHCP, Group Policy, delte nettverksressurser og integrasjon av en Windows 11-klient i domenet.
+Et praktisk Windows Server 2025-prosjekt som viser oppsett, konfigurering, testing og feilsøking av Active Directory Domain Services, DNS, DHCP, Group Policy, delte nettverksressurser, NTFS/SMB-rettigheter og integrasjon av Windows 11-klienter i domenet.
 
 ---
 
@@ -36,7 +36,7 @@ Miljøet inneholder:
 | Subnet Mask | 255.255.255.0 |
 | Default Gateway | 192.168.0.1 |
 | Active Directory-domene | kubendata.local |
-| Klientnavn | CLIENT-PC2 |
+| Klientnavn | CLIENT-PC2 / CLIENT-PC3 |
 | Klientoperativsystem | Windows 11 Pro |
 | DHCP Scope | 192.168.0.100 - 192.168.0.200 |
 | DNS Server | 192.168.0.10 |
@@ -157,6 +157,21 @@ OU-ene brukes til å organisere brukere og bestemme hvor forskjellige Group Poli
 
 ![OU-struktur i Active Directory](screenshots/01-ad-ou-structure.png)
 
+
+### OU for arbeidsstasjoner
+
+For å kunne bruke en datamaskinbasert Group Policy på klientmaskiner ble det også opprettet:
+
+```text
+OU-WORKSTATIONS
+```
+
+`CLIENT-PC3` ble flyttet fra standardcontaineren `Computers` til `OU-WORKSTATIONS`.
+
+![CLIENT-PC3 i OU-WORKSTATIONS](screenshots/35-ou-workstations-client-pc3.png)
+
+Dette gjør at datamaskinobjektet kan få egne policyer gjennom en GPO som er koblet direkte til denne OU-en.
+
 ---
 
 ## Domenebrukere
@@ -222,6 +237,19 @@ KUBENDATA\liv.andersen
 ```
 
 En lokal administratorkonto ble også beholdt for administrasjon og feilsøking.
+
+
+### CLIENT-PC3 – ekstra testklient
+
+En ekstra Windows 11 Pro-klient ble opprettet for å teste **Computer Configuration** separat fra de tidligere brukerbaserte GPO-testene.
+
+Maskinnavn:
+
+```text
+CLIENT-PC3
+```
+
+Klienten ble meldt inn i `kubendata.local`, fikk nettverkskonfigurasjon fra DHCP på `DC01`, brukte `192.168.0.10` som DNS-server og ble deretter flyttet til `OU-WORKSTATIONS`.
 
 ### Nettverksstatus før DHCP-flytting
 
@@ -634,6 +662,64 @@ Bakgrunnsbildet for Salg ble vist korrekt.
 
 ---
 
+
+## GPO-WORKSTATIONS – Computer Configuration
+
+For å demonstrere forskjellen mellom brukerbasert og datamaskinbasert Group Policy ble det opprettet en egen GPO:
+
+```text
+GPO-WORKSTATIONS
+```
+
+GPO-en ble koblet direkte til:
+
+```text
+OU-WORKSTATIONS
+```
+
+![GPO-WORKSTATIONS koblet til OU-WORKSTATIONS](screenshots/36-gpo-workstations-linked-to-ou.png)
+
+I denne GPO-en ble en innstilling under **Computer Configuration** aktivert:
+
+```text
+Computer Configuration
+→ Policies
+→ Administrative Templates
+→ Windows Components
+→ AutoPlay Policies
+→ Turn off AutoPlay
+→ Enabled
+→ All drives
+```
+
+![Turn off AutoPlay aktivert i GPO-WORKSTATIONS](screenshots/37-gpo-workstations-autoplay-disabled.png)
+
+Policyen følger `CLIENT-PC3` som datamaskinobjekt, uavhengig av hvilken domenebruker som logger inn.
+
+Policyen ble kontrollert på `CLIENT-PC3` med:
+
+```powershell
+gpupdate /force
+gpresult /scope computer /r
+```
+
+`gpresult` viste at `CLIENT-PC3` lå i `OU-WORKSTATIONS`, og at `GPO-WORKSTATIONS` var listet under **Applied Group Policy Objects**.
+
+![gpresult for GPO-WORKSTATIONS på CLIENT-PC3](screenshots/38-client-pc3-gpo-workstations-gpresult.png)
+
+Dette bekreftet hele kjeden:
+
+```text
+CLIENT-PC3
+    ↓
+OU-WORKSTATIONS
+    ↓
+GPO-WORKSTATIONS
+    ↓
+Computer Configuration brukt på klienten
+```
+
+
 # Delt nettverksressurs
 
 En delt mappe ble opprettet på serveren for Salgsavdelingen.
@@ -668,6 +754,151 @@ Dette bekreftet både:
 ![Salg Felles synlig under Denne PC](screenshots/15-gpo-salg-mapped-drive-visible.png)
 
 ---
+
+
+## Delt mappe med AD-grupper, NTFS og SMB
+
+For å demonstrere mer kontrollert filtilgang ble det opprettet en egen delt mappe:
+
+```text
+C:\Shares\informasjon
+```
+
+![Mappen informasjon på DC01](screenshots/39-shared-folder-informasjon-on-dc01.png)
+
+### AD-grupper for tilgang
+
+I Active Directory ble det opprettet to sikkerhetsgrupper:
+
+```text
+GG-informasjon-Read
+GG-informasjon-Modify
+```
+
+![AD-grupper for Read og Modify](screenshots/40-ad-groups-informasjon-read-modify.png)
+
+Tilgang ble gitt via grupper i stedet for direkte til enkeltbrukere.
+
+`ola.nordmann` ble lagt til i:
+
+```text
+GG-informasjon-Read
+```
+
+![Ola medlem av Read-gruppen](screenshots/41-ola-member-of-informasjon-read.png)
+
+`anne.larsen` ble lagt til i:
+
+```text
+GG-informasjon-Modify
+```
+
+![Anne medlem av Modify-gruppen](screenshots/42-anne-member-of-informasjon-modify.png)
+
+Dette gir en mer administrerbar modell:
+
+```text
+User → Group → Permission
+```
+
+### NTFS-rettigheter
+
+Arv på mappen ble deaktivert og de arvede rettighetene ble konvertert til eksplisitte rettigheter. Den generelle `KUBENDATA\Users`-tilgangen ble deretter fjernet.
+
+Følgende NTFS-rettigheter ble satt:
+
+```text
+GG-informasjon-Read   → Read
+GG-informasjon-Modify → Modify
+```
+
+![NTFS-rettigheter for informasjon](screenshots/43-ntfs-permissions-informasjon-read-modify.png)
+
+NTFS bestemmer hva brukeren faktisk kan gjøre med mapper og filer etter at brukeren har fått tilgang.
+
+### SMB-deling
+
+Mappen ble delt over nettverket med delingsnavnet:
+
+```text
+informasjon
+```
+
+![SMB-deling av informasjon](screenshots/44-smb-share-informasjon.png)
+
+Nettverksstien ble dermed:
+
+```text
+\\DC01\informasjon
+```
+
+Share Permissions ble konfigurert slik:
+
+```text
+GG-informasjon-Read   → Read
+GG-informasjon-Modify → Change + Read
+```
+
+`Everyone` ble fjernet fra Share Permissions.
+
+![SMB Share Permissions](screenshots/45-smb-share-permissions-read-modify.png)
+
+Forskjellen mellom lagene er:
+
+```text
+SMB  = tilgang til den delte mappen over nettverket
+NTFS = hva brukeren kan gjøre inne i mappen og filene
+```
+
+### Test fra CLIENT-PC3 – Ola
+
+Etter ny innlogging med `KUBENDATA\ola.nordmann` ble den delte mappen åpnet fra klienten:
+
+```text
+\\DC01\informasjon
+```
+
+![Ola åpner SMB-mappen fra CLIENT-PC3](screenshots/46-client-pc3-open-smb-share-as-ola.png)
+
+Ola kunne åpne og lese `test.txt`, men kunne ikke opprette en ny fil.
+
+![Ola får Access Denied ved skrivetest](screenshots/47-ola-read-only-access-denied.png)
+
+Dette bekreftet:
+
+```text
+Ola
+→ GG-informasjon-Read
+→ Read
+→ lesing fungerer
+→ oppretting/skriving blir avvist
+```
+
+### Test fra CLIENT-PC3 – Anne
+
+Etter ny innlogging med `KUBENDATA\anne.larsen` ble samme nettverksmappe åpnet.
+
+Anne kunne opprette og lagre:
+
+```text
+anne-test.txt
+```
+
+![Anne kan opprette fil med Modify-rettighet](screenshots/48-anne-modify-create-file-success.png)
+
+I testen kunne Anne også redigere og slette filen.
+
+Dette bekreftet:
+
+```text
+Anne
+→ GG-informasjon-Modify
+→ Modify
+→ lese, opprette, endre og slette
+```
+
+Testen dokumenterer både SMB-deling, NTFS-rettigheter, gruppestyrt tilgang og praktisk validering fra domeneklienten.
+
 
 # Testing av Group Policy
 
@@ -709,6 +940,25 @@ Applied GPO: GPO-SALG
 ```
 
 Dette bekreftet at riktig Group Policy ble brukt på riktig bruker og OU.
+
+
+### Computer Configuration på CLIENT-PC3
+
+Datamaskinpolicyen ble kontrollert separat med:
+
+```powershell
+gpresult /scope computer /r
+```
+
+Resultatet viste:
+
+```text
+Computer: CLIENT-PC3
+OU: OU-WORKSTATIONS
+Applied GPO: GPO-WORKSTATIONS
+```
+
+Dette bekreftet at bruker-GPO og computer-GPO kan testes separat.
 
 ---
 
@@ -767,6 +1017,9 @@ Følgende funksjonalitet ble testet:
 - Organizational Units
 - Domenebrukere
 - Windows 11 Domain Join
+- CLIENT-PC3 i OU-WORKSTATIONS
+- Computer Configuration med GPO-WORKSTATIONS
+- `gpresult /scope computer /r`
 - Intern DNS
 - Ekstern DNS
 - DNS-diagnostikk
@@ -779,6 +1032,11 @@ Følgende funksjonalitet ble testet:
 - Avdelingsspesifikke policyer
 - Skrivebordsbakgrunn gjennom GPO
 - Mapped Drive
+- SMB-deling
+- NTFS-rettigheter
+- AD-sikkerhetsgrupper for Read/Modify
+- Read-only test med Ola
+- Modify-test med Anne
 - Domenepålogging
 - PowerShell-baserte administrasjonskommandoer
 
@@ -793,11 +1051,15 @@ Eksempler:
 - Kontroll av at domeneklienter bruker Domain Controller som DNS
 - Forskjellen mellom lokal administrator og domenebruker
 - Testing av Group Policy med `gpresult`
+- Skille mellom User Configuration og Computer Configuration
+- Kontroll av at GPO testes på riktig klientmaskin
 - Oppdatering av policyer med `gpupdate`
 - Kontroll av DHCP Authorization
 - Unngå to aktive DHCP-servere på samme nettverk
 - Testing av DNS etter DHCP-konfigurasjon
 - Analyse av Domain Controller-advarsler
+- Feilsøking av SMB-sti og servernavn
+- Testing av Read/Modify-tilgang gjennom SMB og NTFS
 - Kontroll av dupliserte SPN-er
 
 Dette ga praktisk erfaring med både oppsett og systematisk feilsøking.
@@ -816,10 +1078,15 @@ Jeg lærte blant annet:
 - hvordan DHCP kan distribuere IP-adresse, gateway, DNS-server og domenenavn automatisk
 - hvordan Organizational Units brukes til å strukturere brukere
 - hvordan Group Policy kan gi ulike innstillinger til forskjellige avdelinger
-- hvordan `gpupdate /force` og `gpresult /r` brukes til å teste og feilsøke Group Policy
+- forskjellen mellom `User Configuration` og `Computer Configuration`
+- hvordan en GPO må kobles til riktig OU for å få riktig scope
+- hvordan `gpupdate /force`, `gpresult /r` og `gpresult /scope computer /r` brukes til å teste og feilsøke Group Policy
 - hvordan `nslookup`, `ipconfig` og `dcdiag` brukes til å verifisere nettverks- og domenetjenester
 - hvordan en mapped drive kan distribueres automatisk med Group Policy Preferences
-- hvordan systematisk testing kan skille mellom DNS-, DHCP-, GPO- og klientproblemer
+- forskjellen mellom SMB Share Permissions og NTFS Permissions
+- hvorfor tilgang bør gis via AD-grupper i stedet for direkte til enkeltbrukere
+- hvordan Read- og Modify-rettigheter kan testes fra en domeneklient
+- hvordan systematisk testing kan skille mellom DNS-, DHCP-, GPO-, SMB-, rettighets- og klientproblemer
 
 Prosjektet ga derfor erfaring med både selve konfigurasjonen og med å kontrollere at løsningene faktisk fungerer fra både server- og klientsiden.
 
@@ -839,6 +1106,9 @@ nslookup kubendata.local
 nslookup google.com
 gpupdate /force
 gpresult /r
+gpresult /scope computer /r
+dsa.msc
+gpmc.msc
 dcdiag
 dcdiag /test:dns
 Get-DhcpServerInDC
@@ -865,8 +1135,13 @@ Prosjektet viser praktisk erfaring med:
 - DHCP Authorization i Active Directory
 - Group Policy Management
 - Group Policy Preferences
+- User Configuration og Computer Configuration
+- GPO-linking mot OU
 - Windows 11 domeneklient
 - Delte nettverksressurser
+- SMB Share Permissions
+- NTFS Permissions
+- AD-sikkerhetsgrupper for tilgangsstyring
 - PowerShell
 - Nettverksfeilsøking
 - Infrastrukturtesting
@@ -888,7 +1163,10 @@ windows-server-2025-enterprise-lab/
     |-- 02-ad-users-hr.png
     |-- 03-ad-users-it.png
     |-- ...
-    `-- 34-gpo-hr-editor.png
+    |-- 34-gpo-hr-editor.png
+    |-- 35-ou-workstations-client-pc3.png
+    |-- ...
+    `-- 48-anne-modify-create-file-success.png
 ```
 
 Skjermbildene lagres samlet i `screenshots/`, og hvert skjermbilde vises direkte under den relevante delen i denne README-filen.
@@ -933,6 +1211,8 @@ Active Directory
 DNS
 DHCP
 Group Policy
+Computer Configuration
+SMB / NTFS tilgangsstyring
 Windows 11 domeneklient
 ```
 
